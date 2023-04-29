@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 
 function QuestionForm(props) {
   const [formData, setFormData] = useState({
@@ -9,6 +9,28 @@ function QuestionForm(props) {
     answer4: "",
     correctIndex: 0,
   });
+  function QuestionList() {
+  const [questions, setQuestions] = useState([]);
+
+  useEffect(() => {
+    // Fetch questions from API endpoint
+    fetch('http://localhost:4000/questions')
+      .then(response => response.json())
+      .then(data => setQuestions(data))
+      .catch(error => console.error(error));
+  }, []);
+
+  const handleQuestionSubmit = newQuestion => {
+    // Send new question to API endpoint
+    fetch('http://localhost:4000/questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newQuestion),
+    })
+      .then(response => response.json())
+      .then(createdQuestion => setQuestions([...questions, createdQuestion]))
+      .catch(error => console.error(error));
+  };
 
   function handleChange(event) {
     setFormData({
@@ -88,6 +110,7 @@ function QuestionForm(props) {
       </form>
     </section>
   );
+}
 }
 
 export default QuestionForm;
